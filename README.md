@@ -90,6 +90,7 @@ The **Book Store Application** is a web-based API that allows authenticated user
    mvn spring-boot:run
    ```
 4. Test API using **Postman** or any API client.
+5. Make Sure to include your mongodbUri for testing
 
 
 
