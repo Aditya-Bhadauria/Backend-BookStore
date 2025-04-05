@@ -1,7 +1,10 @@
 services:
   - type: web
     name: zynetic-backend
-    env: java
+    runtime: java       # ✅ specify runtime
     plan: free
     buildCommand: "./mvnw clean package -DskipTests"
     startCommand: "java -jar target/bookstore-0.0.1-SNAPSHOT.jar"
+    envVars:
+      - key: MONGODB_URI
+        sync: false      # ✅ if you're using the Render dashboard to set it
