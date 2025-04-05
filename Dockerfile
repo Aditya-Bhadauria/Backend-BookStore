@@ -1,11 +1,12 @@
-# Use a Java 17 base image
-FROM eclipse-temurin:17-jdk
-
-# Set the working directory inside the container
+# ---- Step 1: Build the app using Maven ----
+FROM maven:3.8.5-eclipse-temurin-17 AS build
 WORKDIR /app
+COPY . .
+RUN mvn clean package -DskipTests
 
-# Copy the jar file and rename it
-COPY target/bookstore-0.0.1-SNAPSHOT.jar bookstore.jar
-
-# Run the Spring Boot application
+# ---- Step 2: Run the built JAR ----
+FROM eclipse-temurin:17-jdk
+WORKDIR /app
+COPY --from=build /app/target/bookstore-0.0.1-SNAPSHOT.jar bookstore.jar
 ENTRYPOINT ["java", "-jar", "bookstore.jar"]
+
