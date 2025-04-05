@@ -1,10 +1,10 @@
 services:
   - type: web
-    name: zynetic-backend
-    runtime: java       # ✅ specify runtime
+    name: bookstore-backend
+    env: docker
     plan: free
-    buildCommand: "./mvnw clean package -DskipTests"
-    startCommand: "java -jar target/bookstore-0.0.1-SNAPSHOT.jar"
+    region: oregon
+    dockerfilePath: ./Dockerfile
     envVars:
-      - key: MONGODB_URI
-        sync: false      # ✅ if you're using the Render dashboard to set it
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
