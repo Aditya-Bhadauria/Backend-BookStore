@@ -6,6 +6,7 @@ import com.aditya.bookstore.dto.LoginResponse;
 import com.aditya.bookstore.model.User;
 import com.aditya.bookstore.repository.UserRepository;
 import com.aditya.bookstore.security.JwtUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -76,4 +79,29 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(Collections.singletonMap("error", "Invalid credentials!"));
     }
+
+    @GetMapping("/profile")
+    public ResponseEntity<?> getProfile(HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Collections.singletonMap("error", "Missing or invalid Authorization header!"));
+        }
+
+        String token = authHeader.substring(7);
+        String email = jwtUtil.extractUserId(token);
+
+        Optional<User> userOptional = userRepository.findByEmail(email);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            Map<String, String> response = new HashMap<>();
+            response.put("email", user.getEmail());
+            response.put("username", user.getUsername());
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Collections.singletonMap("error", "User not found!"));
+        }
+    }
+
 }

@@ -2,10 +2,16 @@ package com.aditya.bookstore.controller;
 
 
 import com.aditya.bookstore.model.Book;
+import com.aditya.bookstore.model.User;
+import com.aditya.bookstore.repository.UserRepository;
 import com.aditya.bookstore.service.BookService;
+import com.aditya.bookstore.service.CustomUserDetailsService;
+import com.aditya.bookstore.service.WishlistService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,6 +24,13 @@ public class BookController {
 
     @Autowired
     private BookService bookService;
+
+    @Autowired
+    private WishlistService wishlistService;
+
+    @Autowired
+    private UserRepository userRepository;
+
 
     @PostMapping
     public ResponseEntity<Book> createBook(@RequestBody Book book) {
@@ -74,4 +87,52 @@ public class BookController {
     public ResponseEntity<List<Book>> filterBooksByRating(@RequestParam double rating) {
         return ResponseEntity.ok(bookService.filterBooksByRating(rating));
     }
+
+    @PostMapping("/wishlist/{bookId}")
+    public ResponseEntity<?> addToWishlist(@PathVariable String bookId) {
+
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+
+        wishlistService.addBookToWishlist(user.getId(), bookId);
+
+        return ResponseEntity.ok("Book added to wishlist");
+    }
+
+
+    @GetMapping("/wishlist")
+    public ResponseEntity<List<Book>> getWishlist() {
+
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+
+        List<Book> wishlist = wishlistService.getUserWishlist(user.getId());
+
+        return ResponseEntity.ok(wishlist);
+    }
+
+
+    @DeleteMapping("/wishlist/{bookId}")
+    public ResponseEntity<?> removeFromWishlist(@PathVariable String bookId) {
+
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+
+        wishlistService.removeBookFromWishlist(user.getId(), bookId);
+
+        return ResponseEntity.ok("Book removed from wishlist");
+    }
+
 }
