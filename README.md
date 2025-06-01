@@ -4,7 +4,7 @@
 The **Book Store Application** is a web-based API that allows authenticated users to manage books, including creating, updating, searching, deleting book entries, viewing personal profiles, and maintaining a personal wishlist. The system implements JWT-based authentication, ensuring secure access to book-related functionalities.
 
 **Live Frontend Deployment:**  
-🌐 [Visit Frontend]([https://your-frontend-url.com](https://book-store-frontend-aditya-bhadaurias-projects.vercel.app/))
+🌐 [Visit Frontend](https://book-store-frontend-aditya-bhadaurias-projects.vercel.app/)
 
 
 ![Screenshot from 2025-06-02 00-47-00](https://github.com/user-attachments/assets/a7cdaf7f-94f8-43cf-a7d0-d4e047855477)
